@@ -1,10 +1,10 @@
-// Credenciales autorizadas
+// Credenciales autorizadas (claves en minúsculas para coincidir con .toLowerCase())
 const USERS = {
   "ceo": "yeiko2026fn",
   "analista": "brayan2026fn",
   "coach": "alex2026fn",
-  "decanoFN1": "cesarFN",
-  "decanoFN2": "oswaldFN",
+  "decanofn1": "cesarFN",
+  "decanofn2": "oswaldFN",
   "manager": "aby2026fn"
 };
 

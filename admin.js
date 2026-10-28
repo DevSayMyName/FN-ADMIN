@@ -8,16 +8,16 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // 2. Mapear roles para mostrar el nombre formal
+  // 2. Mapear roles para mostrar el nombre formal (claves en minúsculas)
   const userRole = sessionData.user;
   const roleNames = {
-  "ceo": "CEO",
-  "analista": "Analista",
-  "coach": "Coach",
-  "decanoFN1": "Decano FN1",
-  "decanoFN2": "Decano FN2",
-  "manager": "Manager"
-};
+    "ceo": "CEO",
+    "analista": "Analista",
+    "coach": "Coach",
+    "decanofn1": "Decano 1",
+    "decanofn2": "Decano 2",
+    "manager": "Manager"
+  };
 
   const formattedName = roleNames[userRole] || userRole.toUpperCase();
 

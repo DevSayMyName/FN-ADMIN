@@ -18,14 +18,15 @@ function getCurrentUser() {
   try {
     const sessionData = JSON.parse(localStorage.getItem('fn_admin_session'));
     if (sessionData && sessionData.user) {
+      // Claves en minúsculas para coincidir con la sesión activa
       const roleNames = {
-  "ceo": "CEO",
-  "analista": "Analista",
-  "coach": "Coach",
-  "decanoFN1": "Decano FN1",
-  "decanoFN2": "Decano FN2",
-  "manager": "Manager"
-};
+        "ceo": "CEO",
+        "analista": "Analista",
+        "coach": "Coach",
+        "decanofn1": "Decano FN1",
+        "decanofn2": "Decano FN2",
+        "manager": "Manager"
+      };
       return roleNames[sessionData.user] || sessionData.user.toUpperCase();
     }
   } catch(e) {
@@ -222,6 +223,3 @@ function deleteEvent(eventId) {
 
 // Inicializar al cargar
 document.addEventListener('DOMContentLoaded', initRealtimeSync);
-
-
-//formulario guarder escuadra que representara y tstde noti
