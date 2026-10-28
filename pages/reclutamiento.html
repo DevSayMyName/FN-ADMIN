@@ -27,31 +27,35 @@
         <p class="rec-subtitle">Gestión de aspirantes, postulaciones y formulario oficial de FN SPORT</p>
       </div>
 
+      <!-- Pestañas de Navegación por Estado -->
       <div class="rec-header-actions">
-        <button class="rec-btn-secondary" onclick="switchView('formView')" id="btnViewForm">
-          📋 VER FORMULARIO
+        <!-- <button class="rec-btn-secondary" onclick="switchTab('formView')" id="btnViewForm">
+          📄 VER FORMULARIO
+        </button> -->
+        <button class="rec-btn-secondary active" onclick="switchTab('PENDIENTE')" id="btnViewPending">
+          ⏳ PENDIENTES (<span id="pendingCount">0</span>)
         </button>
-        <button class="rec-btn-secondary active" onclick="switchView('candidatesView')" id="btnViewCandidates">
-          👥 ASPIRANTES Y EVALUACIÓN
+        <button class="rec-btn-secondary" onclick="switchTab('ACEPTADO')" id="btnViewAccepted">
+          ⭐ ACEPTADOS / EVALUACIÓN (<span id="acceptedCount">0</span>)
         </button>
-        <button class="rec-btn-primary" onclick="openCandidateModal()">
-          + REGISTRAR ASPIRANTE
+        <button class="rec-btn-secondary" onclick="switchTab('DESCARTADO')" id="btnViewDiscarded">
+          🚫 DESCARTADOS (<span id="discardedCount">0</span>)
         </button>
       </div>
     </header>
 
     <!-- SECCIÓN 1: Formulario de Google Embellecido (Iframe) -->
-    <section class="rec-view-section" id="formView" style="display: none;">
+    <!-- <section class="rec-view-section" id="formView" style="display: none;">
       <div class="rec-form-card">
         <div class="rec-form-topbar">
-          <span>Google Form Oficial de Reclutamiento</span>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfjXpKZUEcIM3ku1KxJqXcnOK_qE4n9DTuH_xj0IFbo7JJtig/viewform" target="_blank" class="rec-link-external">
+          <span>Formulario Oficial de Reclutamiento FN SPORT</span>
+          <a href="https://forms.gle/zdsKW8pQcQgnY4t28" target="_blank" class="rec-link-external">
             ABRIR EN PESTAÑA NUEVA ↗
           </a>
         </div>
         <div class="rec-iframe-wrapper">
           <iframe 
-            src="https://docs.google.com/forms/d/e/1FAIpQLSfjXpKZUEcIM3ku1KxJqXcnOK_qE4n9DTuH_xj0IFbo7JJtig/viewform?embedded=true" 
+            src="https://forms.gle/zdsKW8pQcQgnY4t28" 
             width="100%" 
             height="800" 
             frameborder="0" 
@@ -59,88 +63,38 @@
             marginwidth="0">Cargando formulario...</iframe>
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- SECCIÓN 2: Panel de Candidatos (En Tiempo Real con Firebase) -->
     <section class="rec-view-section" id="candidatesView">
       
-      <!-- Filtros y Búsqueda -->
+      <!-- Buscador por Texto -->
       <div class="rec-filter-bar">
-        <input type="text" id="searchInput" class="form-control" placeholder="🔍 Buscar por nombre, nickname o Discord..." oninput="filterCandidates()">
-        
-        <select id="statusFilter" class="form-control" onchange="filterCandidates()">
-          <option value="TODOS">Todos los Estados</option>
-          <option value="PENDIENTE">PENDIENTE</option>
-          <option value="EN REVISIÓN">EN REVISIÓN</option>
-          <option value="ACEPTADO">ACEPTADO</option>
-          <option value="RECHAZADO">RECHAZADO</option>
-        </select>
+        <input type="text" id="searchInput" class="form-control" placeholder="🔍 Buscar por nombre, nacionalidad, rol o WhatsApp...">
       </div>
 
-      <!-- Rejilla de Candidatos -->
+      <!-- Rejilla de Candidatos (Mapeados dinámicamente) -->
       <div class="rec-grid" id="candidatesGrid">
-        <!-- Tarjetas cargadas dinámicamente -->
+        <!-- Las tarjetas se cargan con reclutamiento.js -->
       </div>
     </section>
   </div>
 
-  <!-- Modal Flotante: Agregar / Editar Candidato -->
-  <div class="cal-modal-overlay" id="candidateModal">
-    <div class="cal-modal-card">
+  <!-- Modal Flotante: Ver Respuestas Completas -->
+  <div class="cal-modal-overlay" id="detailsModal">
+    <div class="cal-modal-card" style="max-width: 650px; width: 90%;">
       <div class="cal-modal-header">
-        <h2 id="modalTitle">REGISTRAR <span>ASPIRANTE</span></h2>
-        <button class="cal-btn-close" onclick="closeCandidateModal()">&times;</button>
+        <h2>DETALLES DE <span>POSTULACIÓN</span></h2>
+        <button class="cal-btn-close" onclick="closeDetailsModal()">&times;</button>
       </div>
 
-      <form id="candidateForm" onsubmit="handleSaveCandidate(event)">
-        <input type="hidden" id="candidateId">
+      <!-- Contenido de las respuestas dinámicas -->
+      <div class="cal-modal-body" id="detailsContent" style="max-height: 60vh; overflow-y: auto; padding: 15px 0;">
+      </div>
 
-        <div class="form-group">
-          <label for="candidateName">Nombre Completo</label>
-          <input type="text" id="candidateName" class="form-control" placeholder="Ej. Juan Pérez" required autocomplete="off">
-        </div>
-
-        <div class="form-group">
-          <label for="candidateNick">Nickname / In-Game Name</label>
-          <input type="text" id="candidateNick" class="form-control" placeholder="Ej. FN_Shadow26" required autocomplete="off">
-        </div>
-
-        <div class="form-group">
-          <label for="candidateRole">Rol al que postula</label>
-          <select id="candidateRole" class="form-control" required>
-            <option value="Jugador">Jugador Pro</option>
-            <option value="Analista">Analista Táctico</option>
-            <option value="Coach">Coach / Entrenador</option>
-            <option value="Creador de Contenido">Creador de Contenido</option>
-            <option value="Staff / Admin">Staff / Admin</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="candidateDiscord">Usuario de Discord</label>
-          <input type="text" id="candidateDiscord" class="form-control" placeholder="Ej. shadow#1234 o shadow_fn" required autocomplete="off">
-        </div>
-
-        <div class="form-group">
-          <label for="candidateStatus">Estado de Postulación</label>
-          <select id="candidateStatus" class="form-control" required>
-            <option value="PENDIENTE">PENDIENTE</option>
-            <option value="EN REVISIÓN">EN REVISIÓN</option>
-            <option value="ACEPTADO">ACEPTADO</option>
-            <option value="RECHAZADO">RECHAZADO</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="candidateNotes">Notas / Experiencia</label>
-          <textarea id="candidateNotes" class="form-control cal-textarea" rows="3" placeholder="Comentarios de la evaluación o experiencia relevante..."></textarea>
-        </div>
-
-        <div class="cal-modal-actions">
-          <button type="button" class="cal-btn-cancel" onclick="closeCandidateModal()">CANCELAR</button>
-          <button type="submit" class="cal-btn-primary">GUARDAR ASPIRANTE</button>
-        </div>
-      </form>
+      <!-- Botones de Acción (Aceptar / Descartar / Borrar) -->
+      <div class="cal-modal-actions" id="detailsActions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+      </div>
     </div>
   </div>
 
