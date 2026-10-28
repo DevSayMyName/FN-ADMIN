@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FN SPORT - Panel Admin</title>
+  
+  <!-- Tipografía Oficial -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Estilos CSS (Vinculado al CSS principal en la raíz) -->
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body class="admin-body">
+
+  <div class="admin-wrapper">
+    <!-- Menú Lateral (Izquierda) -->
+    <aside class="admin-sidebar">
+      <div class="admin-brand">
+        <h2>FN <span>SPORT</span></h2>
+        <span class="admin-badge">PANEL ADMIN</span>
+      </div>
+
+      <!-- Tarjeta de Usuario Activo -->
+      <div class="admin-user-info">
+        <p class="admin-user-label">USUARIO CONECTADO</p>
+        <h3 class="admin-user-name" id="welcomeUser">Cargando...</h3>
+      </div>
+
+      <!-- Menú de Enlaces -->
+      <nav class="admin-nav">
+        <span class="admin-nav-title">SITIOS Y MÓDULOS</span>
+        
+        <button class="admin-nav-btn active" onclick="loadPage('https://fnsportoficial.vercel.app/', this)">
+          <span>FN Sport Oficial</span>
+        </button>
+
+        <button class="admin-nav-btn" onclick="loadPage('https://fn-league.vercel.app/', this)">
+          <span>FN League</span>
+        </button>
+
+        <button class="admin-nav-btn" onclick="loadPage('https://braylix23.github.io/LOPZEK/#rosters', this)">
+          <span>FN STATS</span>
+        </button>
+
+        <button class="admin-nav-btn" onclick="loadPage('https://fn-league.vercel.app/coaching/coaching.html', this)">
+          <span>FN TOOL</span>
+        </button>
+
+        <button class="admin-nav-btn" onclick="loadPage('calendario.html', this)">
+            <span>Calendario</span>
+        </button>
+
+        <button class="admin-nav-btn" onclick="loadPage('reclutamiento.html', this)">
+            <span>RECLUTAMIENTO</span>
+        </button>
+      </nav>
+
+      <!-- Botón Cerrar Sesión (Abajo) -->
+      <div class="admin-sidebar-footer">
+        <button class="admin-btn-logout" id="logoutBtn">
+          CERRAR SESIÓN
+        </button>
+      </div>
+    </aside>
+
+    <!-- Área de Contenido Sobrante (Derecha) -->
+    <main class="admin-main">
+      <header class="admin-header">
+        <div class="admin-header-title">
+          <h1 id="headerWelcome">¡BIENVENIDO!</h1>
+          <p id="currentViewTitle">Mostrando: FN Sport Oficial</p>
+        </div>
+      </header>
+
+      <!-- Contenedor donde se cargan las webs -->
+      <div class="admin-iframe-container">
+        <iframe 
+          id="adminIframe" 
+          src="https://fnsportoficial.vercel.app/" 
+          title="Vista Previa"
+        ></iframe>
+      </div>
+    </main>
+  </div>
+
+  <!-- Script específico para el Panel Admin -->
+  <script src="../admin.js"></script>
+</body>
+</html>

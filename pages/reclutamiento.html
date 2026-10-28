@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FN SPORT - Módulo de Reclutamiento</title>
+  
+  <!-- Tipografía Oficial -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- CSS Principal -->
+  <link rel="stylesheet" href="../style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body class="rec-body">
+
+  <div class="rec-container">
+    <!-- Header -->
+    <header class="rec-header">
+      <div>
+        <h1 class="rec-title">MÓDULO DE <span>RECLUTAMIENTO</span></h1>
+        <p class="rec-subtitle">Gestión de aspirantes, postulaciones y formulario oficial de FN SPORT</p>
+      </div>
+
+      <div class="rec-header-actions">
+        <button class="rec-btn-secondary" onclick="switchView('formView')" id="btnViewForm">
+          📋 VER FORMULARIO
+        </button>
+        <button class="rec-btn-secondary active" onclick="switchView('candidatesView')" id="btnViewCandidates">
+          👥 ASPIRANTES Y EVALUACIÓN
+        </button>
+        <button class="rec-btn-primary" onclick="openCandidateModal()">
+          + REGISTRAR ASPIRANTE
+        </button>
+      </div>
+    </header>
+
+    <!-- SECCIÓN 1: Formulario de Google Embellecido (Iframe) -->
+    <section class="rec-view-section" id="formView" style="display: none;">
+      <div class="rec-form-card">
+        <div class="rec-form-topbar">
+          <span>Google Form Oficial de Reclutamiento</span>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfjXpKZUEcIM3ku1KxJqXcnOK_qE4n9DTuH_xj0IFbo7JJtig/viewform" target="_blank" class="rec-link-external">
+            ABRIR EN PESTAÑA NUEVA ↗
+          </a>
+        </div>
+        <div class="rec-iframe-wrapper">
+          <iframe 
+            src="https://docs.google.com/forms/d/e/1FAIpQLSfjXpKZUEcIM3ku1KxJqXcnOK_qE4n9DTuH_xj0IFbo7JJtig/viewform?embedded=true" 
+            width="100%" 
+            height="800" 
+            frameborder="0" 
+            marginheight="0" 
+            marginwidth="0">Cargando formulario...</iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: Panel de Candidatos (En Tiempo Real con Firebase) -->
+    <section class="rec-view-section" id="candidatesView">
+      
+      <!-- Filtros y Búsqueda -->
+      <div class="rec-filter-bar">
+        <input type="text" id="searchInput" class="form-control" placeholder="🔍 Buscar por nombre, nickname o Discord..." oninput="filterCandidates()">
+        
+        <select id="statusFilter" class="form-control" onchange="filterCandidates()">
+          <option value="TODOS">Todos los Estados</option>
+          <option value="PENDIENTE">PENDIENTE</option>
+          <option value="EN REVISIÓN">EN REVISIÓN</option>
+          <option value="ACEPTADO">ACEPTADO</option>
+          <option value="RECHAZADO">RECHAZADO</option>
+        </select>
+      </div>
+
+      <!-- Rejilla de Candidatos -->
+      <div class="rec-grid" id="candidatesGrid">
+        <!-- Tarjetas cargadas dinámicamente -->
+      </div>
+    </section>
+  </div>
+
+  <!-- Modal Flotante: Agregar / Editar Candidato -->
+  <div class="cal-modal-overlay" id="candidateModal">
+    <div class="cal-modal-card">
+      <div class="cal-modal-header">
+        <h2 id="modalTitle">REGISTRAR <span>ASPIRANTE</span></h2>
+        <button class="cal-btn-close" onclick="closeCandidateModal()">&times;</button>
+      </div>
+
+      <form id="candidateForm" onsubmit="handleSaveCandidate(event)">
+        <input type="hidden" id="candidateId">
+
+        <div class="form-group">
+          <label for="candidateName">Nombre Completo</label>
+          <input type="text" id="candidateName" class="form-control" placeholder="Ej. Juan Pérez" required autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label for="candidateNick">Nickname / In-Game Name</label>
+          <input type="text" id="candidateNick" class="form-control" placeholder="Ej. FN_Shadow26" required autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label for="candidateRole">Rol al que postula</label>
+          <select id="candidateRole" class="form-control" required>
+            <option value="Jugador">Jugador Pro</option>
+            <option value="Analista">Analista Táctico</option>
+            <option value="Coach">Coach / Entrenador</option>
+            <option value="Creador de Contenido">Creador de Contenido</option>
+            <option value="Staff / Admin">Staff / Admin</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="candidateDiscord">Usuario de Discord</label>
+          <input type="text" id="candidateDiscord" class="form-control" placeholder="Ej. shadow#1234 o shadow_fn" required autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label for="candidateStatus">Estado de Postulación</label>
+          <select id="candidateStatus" class="form-control" required>
+            <option value="PENDIENTE">PENDIENTE</option>
+            <option value="EN REVISIÓN">EN REVISIÓN</option>
+            <option value="ACEPTADO">ACEPTADO</option>
+            <option value="RECHAZADO">RECHAZADO</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="candidateNotes">Notas / Experiencia</label>
+          <textarea id="candidateNotes" class="form-control cal-textarea" rows="3" placeholder="Comentarios de la evaluación o experiencia relevante..."></textarea>
+        </div>
+
+        <div class="cal-modal-actions">
+          <button type="button" class="cal-btn-cancel" onclick="closeCandidateModal()">CANCELAR</button>
+          <button type="submit" class="cal-btn-primary">GUARDAR ASPIRANTE</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript Reclutamiento -->
+  <script src="reclutamiento.js"></script>
+</body>
+</html>
